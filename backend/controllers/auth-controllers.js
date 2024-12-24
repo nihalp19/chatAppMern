@@ -1,6 +1,7 @@
 import USER from "../models/user-models.js"
 import bcryptjs from "bcryptjs"
 import generateToken from "../utils/generateToken.js"
+import cloudnairy from "../lib/cloudnairy.js"
 export const signup = async (req, res) => {
     try {
         const { fullName, username, password, ConfirmPassword, gender, profilePic } = req.body
@@ -100,5 +101,32 @@ export const logout = async (req, res) => {
     catch(error){
         console.log("Error while logout",error.message)
         return res.status(400).json({success : false,message:"Internal Server error",error : error.message})
+    }
+}
+
+export const updateProfile = async (req,res) => {
+    try{
+        const {profilePic} = req.body
+        const userId = req.user._id
+
+        if(!profilePic){
+            return res.status(400).json({success :false,message : "Profile pic is required"})
+        }
+
+        const uploadresponse = await cloudnairy.uploader.upload(profilePic)
+        const updatedUser = await USER.findByIdAndUpdate(userId,{profilePic : uploadresponse.secure_url},{new:true})
+        res.status(200).json(updatedUser)
+    }catch(error){
+        console.log("update profile :",error)
+        return res.status(500).json({success : false,message : "Internal Server Error",error : error.message})
+    }
+}
+
+export const checkAuth = () => {
+    try{
+        res.status(200).json(req.user)
+    }catch(error){
+        console.log("Error is CheckAuth controller",error.message)
+        res.stat
     }
 }
