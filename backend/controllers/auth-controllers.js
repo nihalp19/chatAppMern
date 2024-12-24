@@ -122,9 +122,13 @@ export const updateProfile = async (req,res) => {
     }
 }
 
-export const checkAuth = () => {
+export const checkAuth = (req,res) => {
     try{
-        res.status(200).json(req.user)
+        const user = req.user
+        res.status(200).json({success : true,message : "user is authenticated",user : {
+            ...user._doc,
+            password : undefined
+        }})
     }catch(error){
         console.log("Error is CheckAuth controller",error.message)
         res.stat
