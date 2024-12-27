@@ -1,5 +1,6 @@
 import {v2 as cloudnairy} from "cloudinary"
-
+import dotenv from "dotenv"
+dotenv.config()
 
 cloudnairy.config({
     cloud_name : process.env.CLOUDNAIRY_CLOUD_NAME,
