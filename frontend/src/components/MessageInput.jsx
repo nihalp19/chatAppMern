@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useChatStore } from '../store/useChatStore'
 import toast from 'react-hot-toast'
 import { useRef } from 'react'
@@ -9,6 +9,8 @@ function MessageInput() {
     const [imagePreview, setImagePreview] = useState(null)
     const fileInputRef = useRef(null)
     const { sentMessages } = useChatStore()
+
+
 
     const handleImageChange = (e) => {
         const file = e.target.files[0]
