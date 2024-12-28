@@ -1,9 +1,12 @@
+import { getReceiverSocketId, io } from "../lib/socket.js"
 import message from "../models/message-model.js"
+import USER from "../models/user-models.js"
+import cloudnairy from "../lib/cloudnairy.js"
 
 export const getUsersForSidebar = async (req,res) => {
     try{
         const loggedInUserId = req.user._id
-        const filteredUsers = await User.find({_id :{$ne :loggedInUserId}}).select("-password")
+        const filteredUsers = await USER.find({_id :{$ne :loggedInUserId}}).select("-password")
 
         return res.status(200).json({success : true,message : "User Filtered",user : filteredUsers})
     }catch(error){
@@ -12,7 +15,7 @@ export const getUsersForSidebar = async (req,res) => {
     }
 }
 
-export const getMessages = async() => {
+export const getMessages = async(req,res) => {
     try{
         const {id:userToChatId} = req.params
         const myId = req.user._id;
@@ -32,14 +35,14 @@ export const getMessages = async() => {
     }
 }
 
-export const sendMessages = async() => {
+export const sendMessages = async(req,res) => {
     try{
         const {text,image} = req.body
         const {id : receiverId} = req.params
         const senderId = req.user._id
         let imageUrl
         if(image){
-            const uploadResponse = await cloundinary.uploader.upload(image)
+            const uploadResponse = await cloudnairy.uploader.upload(image)
             imageUrl = uploadResponse.secure_url
         }
 
@@ -53,7 +56,12 @@ export const sendMessages = async() => {
         await newMessage.save()
         //todo
 
-        return res.status(201).json({success : true,message : "message send successfully",message : newMessage})
+        const receiverSocketId = getReceiverSocketId(receiverId)
+        if(receiverSocketId) {
+            io.to(receiverSocketId).emit("newMessage",newMessage)
+        }
+
+        return res.status(201).json({success : true,message : "message send successfully",messages : newMessage})
     }catch(error){
         console.log("Error in sendMessage controllers",error.message)
         return res.status(200).json({success : false,message : "Internal server Error",error: error.message})

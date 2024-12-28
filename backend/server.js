@@ -6,8 +6,8 @@ import messageRoutes from "./routes/message-route.js"
 import connectDB from "./db/connectDB.js"
 import cookieParser from "cookie-parser"
 import cors from "cors"
+import { app, server } from "./lib/socket.js"
 
-const app = express()
 const PORT = process.env.PORT || 4000
 
 app.use(cors({
@@ -17,10 +17,10 @@ app.use(cors({
 app.use(express.json())
 app.use(cookieParser())
 app.use("/api/auth", authRoutes)
-app.use("api/message", messageRoutes)
+app.use("/api/messages", messageRoutes)
 
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
     connectDB()
     console.log(`SERVER STARTED ON ${PORT}`)
 })

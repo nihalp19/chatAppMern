@@ -14,9 +14,15 @@ const Sidebar = () => {
     getUsers();
   }, [getUsers]);
 
+  console.log("selected",selectedUser);
+  console.log("users",users);
+  
+
   const filteredUsers = showOnlineOnly
     ? users.filter((user) => onlineUsers.includes(user._id))
     : users;
+
+    console.log("filteredusers",filteredUsers)
 
   if (isUsersLoading) return <SidebarSkeleton />;
 
@@ -55,7 +61,7 @@ const Sidebar = () => {
           >
             <div className="relative mx-auto lg:mx-0">
               <img
-                src={user.profilePic || "/avatar.png"}
+                src={user.profilePic || "../../public/avatar.png"}
                 alt={user.name}
                 className="size-12 object-cover rounded-full"
               />
